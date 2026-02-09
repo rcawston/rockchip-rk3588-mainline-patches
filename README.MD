@@ -50,6 +50,20 @@ sudo ldconfig  # Update library cache
 mpp_info  # Should show MPP version and supported codecs (including HEVC encode)
 ```
 
+### Pre-Requisite: Add DTS Overlay
+
+Add the following DTS overlay to your kernel:
+
+```bash
+rockchip-rk3588-rkvenc-mpp.dts
+```
+
+In armbian, this can be done with:
+
+```bash
+armbian-add-overlay rockchip-rk3588-rkvenc-mpp.dts
+```
+
 ## Set EDID Fix
 
 Latest version: 0002-rockchip-rk3588-hdmirx-edid-fix-v1.patch
