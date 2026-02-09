@@ -1,4 +1,15 @@
-# RK3588 VEPU580 H.265 Encoder Driver for Mainline Linux (WIP)
+# Out-of-Tree RK3588 patches for Rockchip RK3588 (WIP)
+
+This repository contains an out-of-tree patches for RK3588 to a near-mainline kernel (tested on v6.19-rc8)
+
+Current Patches:
+
+- H.265 Hardware Encoding Support: 0001-rockchip-rk3588-vepu580-encoder-support-v2.patch
+- Set EDID Fix: 0002-rockchip-rk3588-hdmirx-edid-fix-v1.patch
+
+Testing is done on Rock 5B[+] and Orange Pi 5 Ultra.
+
+## RK3588 VEPU580 H.265 Encoder Driver for Mainline Linux (WIP)
 
 This repository contains an out-of-tree patch series adding stateful H.265 (HEVC) encoding support for the Rockchip RK3588's VEPU580 encoder block to a near-mainline kernel (tested on v6.19-rc8).
 
@@ -8,7 +19,7 @@ This repository contains an out-of-tree patch series adding stateful H.265 (HEVC
 
 **Motivation**: Enable low-latency hardware-accelerated H.265 encoding for applications like IPKVM (e.g., SentinelKVM project) on mainline kernels without full vendor BSP dependency.
 
-## Pre-Requisite: Build & Install MPP
+### Pre-Requisite: Build & Install MPP
 
 Build directly on the RK3588 device (or cross-compile for faster results).
 
@@ -36,6 +47,13 @@ sudo ldconfig  # Update library cache
 ```bash
 mpp_info  # Should show MPP version and supported codecs (including HEVC encode)
 ```
+
+## Set EDID Fix
+
+This patch addresses an issue where the EDID is not being written correctly to the HDMIRX block.
+The patch ensures that the EDID is correctly written and that the source device sees the newly set EDID.
+
+Tested with various EDID including 4k@60hz support.
 
 ## How to Apply
 
