@@ -9,7 +9,9 @@ Current Patches:
 
 Testing is done on Rock 5B[+] and Orange Pi 5 Ultra.
 
-## RK3588 VEPU580 H.265 Encoder Driver for Mainline Linux (WIP)
+## VEPU580 H.265 Encoder Driver
+
+Latest version: 0001-rockchip-rk3588-vepu580-encoder-support-v2.patch
 
 This repository contains an out-of-tree patch series adding stateful H.265 (HEVC) encoding support for the Rockchip RK3588's VEPU580 encoder block to a near-mainline kernel (tested on v6.19-rc8).
 
@@ -49,6 +51,8 @@ mpp_info  # Should show MPP version and supported codecs (including HEVC encode)
 ```
 
 ## Set EDID Fix
+
+Latest version: 0002-rockchip-rk3588-hdmirx-edid-fix-v1.patch
 
 This patch addresses an issue where the EDID is not being written correctly to the HDMIRX block.
 The patch ensures that the EDID is correctly written and that the source device sees the newly set EDID.
