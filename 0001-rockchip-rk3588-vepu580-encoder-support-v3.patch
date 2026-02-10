@@ -1,91 +1,110 @@
-diff -ruN aa/include/uapi/linux/rkvenc.h bb/include/uapi/linux/rkvenc.h
---- aa/include/uapi/linux/rkvenc.h	1969-12-31 16:00:00
-+++ bb/include/uapi/linux/rkvenc.h	2026-02-07 01:32:43
-@@ -0,0 +1,84 @@
-+/* SPDX-License-Identifier: ((GPL-2.0+ WITH Linux-syscall-note) OR MIT) */
-+/*
-+ * Rockchip MPP service driver - UAPI definitions
-+ * Ported from the Rockchip BSP kernel rk-mpp.h
-+ *
-+ * Copyright (C) 2023 Rockchip Electronics Co., Ltd.
-+ */
+Binary files aa/.DS_Store and bb/.DS_Store differ
+diff -ruN aa/arch/arm64/boot/dts/rockchip/rk3588-base.dtsi bb/arch/arm64/boot/dts/rockchip/rk3588-base.dtsi
+--- aa/arch/arm64/boot/dts/rockchip/rk3588-base.dtsi	2026-02-09 18:12:23
++++ bb/arch/arm64/boot/dts/rockchip/rk3588-base.dtsi	2026-02-07 09:40:49
+@@ -50,6 +50,8 @@
+ 		spi2 = &spi2;
+ 		spi3 = &spi3;
+ 		spi4 = &spi4;
++		rkvenc0 = &rkvenc0;
++		rkvenc1 = &rkvenc1;
+ 	};
+ 
+ 	cpus {
+@@ -1351,6 +1353,92 @@
+ 		clock-names = "aclk", "iface";
+ 		power-domains = <&power RK3588_PD_VDPU>;
+ 		#iommu-cells = <0>;
++	};
 +
-+#ifndef _UAPI_RKVENC_H
-+#define _UAPI_RKVENC_H
++	mpp_srv: mpp-srv {
++		compatible = "rockchip,mpp-service";
++		rockchip,taskqueue-count = <12>;
++		rockchip,resetgroup-count = <1>;
++		status = "okay";
++	};
 +
-+#include <linux/types.h>
++	rkvenc_ccu: rkvenc-ccu {
++		compatible = "rockchip,rkv-encoder-v2-ccu";
++		status = "okay";
++	};
 +
-+/* Use 'v' as magic number */
-+#define MPP_IOC_MAGIC			'v'
++	rkvenc0: rkvenc-core@fdbd0000 {
++		compatible = "rockchip,rkv-encoder-v2-core";
++		reg = <0x0 0xfdbd0000 0x0 0x6000>;
++		interrupts = <GIC_SPI 101 IRQ_TYPE_LEVEL_HIGH 0>;
++		interrupt-names = "irq_rkvenc0";
++		clocks = <&cru ACLK_RKVENC0>, <&cru HCLK_RKVENC0>,
++			 <&cru CLK_RKVENC0_CORE>;
++		clock-names = "aclk_vcodec", "hclk_vcodec", "clk_core";
++		rockchip,normal-rates = <500000000>, <0>, <800000000>;
++		assigned-clocks = <&cru ACLK_RKVENC0>, <&cru CLK_RKVENC0_CORE>;
++		assigned-clock-rates = <500000000>, <800000000>;
++		resets = <&cru SRST_A_RKVENC0>, <&cru SRST_H_RKVENC0>,
++			 <&cru SRST_RKVENC0_CORE>;
++		reset-names = "video_a", "video_h", "video_core";
++		iommus = <&rkvenc0_mmu>;
++		rockchip,srv = <&mpp_srv>;
++		rockchip,ccu = <&rkvenc_ccu>;
++		rockchip,taskqueue-node = <7>;
++		rockchip,resetgroup-node = <0>;
++		rockchip,task-capacity = <8>;
++		power-domains = <&power RK3588_PD_VENC0>;
++		status = "okay";
++	};
 +
-+#define MPP_IOC_CFG_V1			_IOW(MPP_IOC_MAGIC, 1, unsigned int)
-+#define MPP_IOC_CFG_V2			_IOW(MPP_IOC_MAGIC, 2, unsigned int)
++	rkvenc0_mmu: iommu@fdbdf000 {
++		compatible = "rockchip,rk3588-iommu", "rockchip,rk3568-iommu";
++		reg = <0x0 0xfdbdf000 0x0 0x40>, <0x0 0xfdbdf040 0x0 0x40>;
++		interrupts = <GIC_SPI 99 IRQ_TYPE_LEVEL_HIGH 0>,
++			     <GIC_SPI 100 IRQ_TYPE_LEVEL_HIGH 0>;
++		clocks = <&cru ACLK_RKVENC0>, <&cru HCLK_RKVENC0>;
++		clock-names = "aclk", "iface";
++		rockchip,disable-mmu-reset;
++		#iommu-cells = <0>;
++		power-domains = <&power RK3588_PD_VENC0>;
++		status = "okay";
++	};
 +
-+/**
-+ * Command type: keep the same as user space
-+ */
-+enum MPP_DEV_COMMAND_TYPE {
-+	MPP_CMD_QUERY_BASE		= 0,
-+	MPP_CMD_QUERY_HW_SUPPORT	= MPP_CMD_QUERY_BASE + 0,
-+	MPP_CMD_QUERY_HW_ID		= MPP_CMD_QUERY_BASE + 1,
-+	MPP_CMD_QUERY_CMD_SUPPORT	= MPP_CMD_QUERY_BASE + 2,
-+	MPP_CMD_QUERY_BUTT,
++	rkvenc1: rkvenc-core@fdbe0000 {
++		compatible = "rockchip,rkv-encoder-v2-core";
++		reg = <0x0 0xfdbe0000 0x0 0x6000>;
++		interrupts = <GIC_SPI 104 IRQ_TYPE_LEVEL_HIGH 0>;
++		interrupt-names = "irq_rkvenc1";
++		clocks = <&cru ACLK_RKVENC1>, <&cru HCLK_RKVENC1>,
++			 <&cru CLK_RKVENC1_CORE>;
++		clock-names = "aclk_vcodec", "hclk_vcodec", "clk_core";
++		rockchip,normal-rates = <500000000>, <0>, <800000000>;
++		assigned-clocks = <&cru ACLK_RKVENC1>, <&cru CLK_RKVENC1_CORE>;
++		assigned-clock-rates = <500000000>, <800000000>;
++		resets = <&cru SRST_A_RKVENC1>, <&cru SRST_H_RKVENC1>,
++			 <&cru SRST_RKVENC1_CORE>;
++		reset-names = "video_a", "video_h", "video_core";
++		iommus = <&rkvenc1_mmu>;
++		rockchip,srv = <&mpp_srv>;
++		rockchip,ccu = <&rkvenc_ccu>;
++		rockchip,taskqueue-node = <7>;
++		rockchip,resetgroup-node = <0>;
++		rockchip,task-capacity = <8>;
++		power-domains = <&power RK3588_PD_VENC1>;
++		status = "okay";
++	};
 +
-+	MPP_CMD_INIT_BASE		= 0x100,
-+	MPP_CMD_INIT_CLIENT_TYPE	= MPP_CMD_INIT_BASE + 0,
-+	MPP_CMD_INIT_DRIVER_DATA	= MPP_CMD_INIT_BASE + 1,
-+	MPP_CMD_INIT_TRANS_TABLE	= MPP_CMD_INIT_BASE + 2,
-+	MPP_CMD_INIT_BUTT,
-+
-+	MPP_CMD_SEND_BASE		= 0x200,
-+	MPP_CMD_SET_REG_WRITE		= MPP_CMD_SEND_BASE + 0,
-+	MPP_CMD_SET_REG_READ		= MPP_CMD_SEND_BASE + 1,
-+	MPP_CMD_SET_REG_ADDR_OFFSET	= MPP_CMD_SEND_BASE + 2,
-+	MPP_CMD_SET_RCB_INFO		= MPP_CMD_SEND_BASE + 3,
-+	MPP_CMD_SET_SESSION_FD		= MPP_CMD_SEND_BASE + 4,
-+	MPP_CMD_SEND_BUTT,
-+
-+	MPP_CMD_POLL_BASE		= 0x300,
-+	MPP_CMD_POLL_HW_FINISH		= MPP_CMD_POLL_BASE + 0,
-+	MPP_CMD_POLL_HW_IRQ		= MPP_CMD_POLL_BASE + 1,
-+	MPP_CMD_POLL_BUTT,
-+
-+	MPP_CMD_CONTROL_BASE		= 0x400,
-+	MPP_CMD_RESET_SESSION		= MPP_CMD_CONTROL_BASE + 0,
-+	MPP_CMD_TRANS_FD_TO_IOVA	= MPP_CMD_CONTROL_BASE + 1,
-+	MPP_CMD_RELEASE_FD		= MPP_CMD_CONTROL_BASE + 2,
-+	MPP_CMD_SEND_CODEC_INFO		= MPP_CMD_CONTROL_BASE + 3,
-+	MPP_CMD_CONTROL_BUTT,
-+
-+	MPP_CMD_BUTT,
-+};
-+
-+/* define flags for mpp_request */
-+#define MPP_FLAGS_MULTI_MSG		(0x00000001)
-+#define MPP_FLAGS_LAST_MSG		(0x00000002)
-+#define MPP_FLAGS_REG_FD_NO_TRANS	(0x00000004)
-+#define MPP_FLAGS_SCL_FD_NO_TRANS	(0x00000008)
-+#define MPP_FLAGS_REG_NO_OFFSET		(0x00000010)
-+#define MPP_FLAGS_SECURE_MODE		(0x00010000)
-+
-+/* data common struct for parse out */
-+struct mpp_request {
-+	__u32 cmd;
-+	__u32 flags;
-+	__u32 size;
-+	__u32 offset;
-+	void __user *data;
-+};
-+
-+#define MPP_BAT_MSG_DONE		(0x00000001)
-+
-+struct mpp_bat_msg {
-+	__u64 flag;
-+	__u32 fd;
-+	__s32 ret;
-+};
-+
-+#endif /* _UAPI_RKVENC_H */
++	rkvenc1_mmu: iommu@fdbef000 {
++		compatible = "rockchip,rk3588-iommu", "rockchip,rk3568-iommu";
++		reg = <0x0 0xfdbef000 0x0 0x40>, <0x0 0xfdbef040 0x0 0x40>;
++		interrupts = <GIC_SPI 102 IRQ_TYPE_LEVEL_HIGH 0>,
++			     <GIC_SPI 103 IRQ_TYPE_LEVEL_HIGH 0>;
++		clocks = <&cru ACLK_RKVENC1>, <&cru HCLK_RKVENC1>;
++		clock-names = "aclk", "iface";
++		rockchip,disable-mmu-reset;
++		#iommu-cells = <0>;
++		power-domains = <&power RK3588_PD_VENC1>;
++		status = "okay";
+ 	};
+ 
+ 	av1d: video-codec@fdc70000 {
+Binary files aa/drivers/.DS_Store and bb/drivers/.DS_Store differ
 diff -ruN aa/drivers/iommu/rockchip-iommu.c bb/drivers/iommu/rockchip-iommu.c
 --- aa/drivers/iommu/rockchip-iommu.c	2026-02-08 22:38:08
 +++ bb/drivers/iommu/rockchip-iommu.c	2026-02-07 23:38:39
@@ -105,6 +124,9 @@ diff -ruN aa/drivers/iommu/rockchip-iommu.c bb/drivers/iommu/rockchip-iommu.c
  	.of_xlate = rk_iommu_of_xlate,
  	.default_domain_ops = &(const struct iommu_domain_ops) {
  		.attach_dev	= rk_iommu_attach_device,
+Binary files aa/drivers/media/.DS_Store and bb/drivers/media/.DS_Store differ
+Binary files aa/drivers/media/platform/.DS_Store and bb/drivers/media/platform/.DS_Store differ
+Binary files aa/drivers/media/platform/rockchip/.DS_Store and bb/drivers/media/platform/rockchip/.DS_Store differ
 diff -ruN aa/drivers/media/platform/rockchip/Kconfig bb/drivers/media/platform/rockchip/Kconfig
 --- aa/drivers/media/platform/rockchip/Kconfig	2026-02-08 22:43:45
 +++ bb/drivers/media/platform/rockchip/Kconfig	2026-02-07 01:43:23
@@ -2879,8 +2901,8 @@ diff -ruN aa/drivers/media/platform/rockchip/rkvenc/rkvenc_iommu.c bb/drivers/me
 +}
 diff -ruN aa/drivers/media/platform/rockchip/rkvenc/rkvenc_service.c bb/drivers/media/platform/rockchip/rkvenc/rkvenc_service.c
 --- aa/drivers/media/platform/rockchip/rkvenc/rkvenc_service.c	1969-12-31 16:00:00
-+++ bb/drivers/media/platform/rockchip/rkvenc/rkvenc_service.c	2026-02-08 01:25:24
-@@ -0,0 +1,1195 @@
++++ bb/drivers/media/platform/rockchip/rkvenc/rkvenc_service.c	2026-02-09 17:54:57
+@@ -0,0 +1,1206 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +/*
 + * Rockchip VEPU580 encoder driver - MPP service char device and ioctl dispatch
@@ -3526,13 +3548,24 @@ diff -ruN aa/drivers/media/platform/rockchip/rkvenc/rkvenc_service.c bb/drivers/
 +			struct rkvenc_task *enc_task = container_of(pending_task,
 +								   struct rkvenc_task,
 +								   mpp_task);
++			int run_ret;
 +
 +			/* Set RCB buffers if SRAM available */
 +			rkvenc2_set_rcbbuf(target, pending_task->session, enc_task);
 +
 +			/* Run on hardware */
 +			set_bit(TASK_STATE_RUNNING, &pending_task->state);
-+			rkvenc_hw_run(target, pending_task);
++			run_ret = rkvenc_hw_run(target, pending_task);
++			if (run_ret) {
++				dev_err(target->dev,
++					"hw_run failed: %d, failing task %d\n",
++					run_ret, pending_task->task_index);
++				set_bit(TASK_STATE_DONE, &pending_task->state);
++				set_bit(target->core_id, &queue->core_idle);
++				rkvenc_task_finish(pending_task->session,
++						  pending_task);
++				wake_up(&pending_task->wait);
++			}
 +		}
 +	}
 +}
@@ -4380,3 +4413,94 @@ diff -ruN aa/drivers/media/platform/rockchip/rkvenc/rkvenc_task.c bb/drivers/med
 +
 +	kthread_queue_work(&mpp->queue->worker, &mpp->work);
 +}
+Binary files aa/drivers/media/platform/synopsys/.DS_Store and bb/drivers/media/platform/synopsys/.DS_Store differ
+Binary files aa/include/.DS_Store and bb/include/.DS_Store differ
+Binary files aa/include/uapi/.DS_Store and bb/include/uapi/.DS_Store differ
+diff -ruN aa/include/uapi/linux/rkvenc.h bb/include/uapi/linux/rkvenc.h
+--- aa/include/uapi/linux/rkvenc.h	1969-12-31 16:00:00
++++ bb/include/uapi/linux/rkvenc.h	2026-02-07 01:32:43
+@@ -0,0 +1,84 @@
++/* SPDX-License-Identifier: ((GPL-2.0+ WITH Linux-syscall-note) OR MIT) */
++/*
++ * Rockchip MPP service driver - UAPI definitions
++ * Ported from the Rockchip BSP kernel rk-mpp.h
++ *
++ * Copyright (C) 2023 Rockchip Electronics Co., Ltd.
++ */
++
++#ifndef _UAPI_RKVENC_H
++#define _UAPI_RKVENC_H
++
++#include <linux/types.h>
++
++/* Use 'v' as magic number */
++#define MPP_IOC_MAGIC			'v'
++
++#define MPP_IOC_CFG_V1			_IOW(MPP_IOC_MAGIC, 1, unsigned int)
++#define MPP_IOC_CFG_V2			_IOW(MPP_IOC_MAGIC, 2, unsigned int)
++
++/**
++ * Command type: keep the same as user space
++ */
++enum MPP_DEV_COMMAND_TYPE {
++	MPP_CMD_QUERY_BASE		= 0,
++	MPP_CMD_QUERY_HW_SUPPORT	= MPP_CMD_QUERY_BASE + 0,
++	MPP_CMD_QUERY_HW_ID		= MPP_CMD_QUERY_BASE + 1,
++	MPP_CMD_QUERY_CMD_SUPPORT	= MPP_CMD_QUERY_BASE + 2,
++	MPP_CMD_QUERY_BUTT,
++
++	MPP_CMD_INIT_BASE		= 0x100,
++	MPP_CMD_INIT_CLIENT_TYPE	= MPP_CMD_INIT_BASE + 0,
++	MPP_CMD_INIT_DRIVER_DATA	= MPP_CMD_INIT_BASE + 1,
++	MPP_CMD_INIT_TRANS_TABLE	= MPP_CMD_INIT_BASE + 2,
++	MPP_CMD_INIT_BUTT,
++
++	MPP_CMD_SEND_BASE		= 0x200,
++	MPP_CMD_SET_REG_WRITE		= MPP_CMD_SEND_BASE + 0,
++	MPP_CMD_SET_REG_READ		= MPP_CMD_SEND_BASE + 1,
++	MPP_CMD_SET_REG_ADDR_OFFSET	= MPP_CMD_SEND_BASE + 2,
++	MPP_CMD_SET_RCB_INFO		= MPP_CMD_SEND_BASE + 3,
++	MPP_CMD_SET_SESSION_FD		= MPP_CMD_SEND_BASE + 4,
++	MPP_CMD_SEND_BUTT,
++
++	MPP_CMD_POLL_BASE		= 0x300,
++	MPP_CMD_POLL_HW_FINISH		= MPP_CMD_POLL_BASE + 0,
++	MPP_CMD_POLL_HW_IRQ		= MPP_CMD_POLL_BASE + 1,
++	MPP_CMD_POLL_BUTT,
++
++	MPP_CMD_CONTROL_BASE		= 0x400,
++	MPP_CMD_RESET_SESSION		= MPP_CMD_CONTROL_BASE + 0,
++	MPP_CMD_TRANS_FD_TO_IOVA	= MPP_CMD_CONTROL_BASE + 1,
++	MPP_CMD_RELEASE_FD		= MPP_CMD_CONTROL_BASE + 2,
++	MPP_CMD_SEND_CODEC_INFO		= MPP_CMD_CONTROL_BASE + 3,
++	MPP_CMD_CONTROL_BUTT,
++
++	MPP_CMD_BUTT,
++};
++
++/* define flags for mpp_request */
++#define MPP_FLAGS_MULTI_MSG		(0x00000001)
++#define MPP_FLAGS_LAST_MSG		(0x00000002)
++#define MPP_FLAGS_REG_FD_NO_TRANS	(0x00000004)
++#define MPP_FLAGS_SCL_FD_NO_TRANS	(0x00000008)
++#define MPP_FLAGS_REG_NO_OFFSET		(0x00000010)
++#define MPP_FLAGS_SECURE_MODE		(0x00010000)
++
++/* data common struct for parse out */
++struct mpp_request {
++	__u32 cmd;
++	__u32 flags;
++	__u32 size;
++	__u32 offset;
++	void __user *data;
++};
++
++#define MPP_BAT_MSG_DONE		(0x00000001)
++
++struct mpp_bat_msg {
++	__u64 flag;
++	__u32 fd;
++	__s32 ret;
++};
++
++#endif /* _UAPI_RKVENC_H */
