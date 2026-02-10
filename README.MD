@@ -6,6 +6,7 @@ Current Patches:
 
 - H.265 Hardware Encoding Support: 0001-rockchip-rk3588-vepu580-encoder-support-v2.patch
 - Set EDID Fix: 0002-rockchip-rk3588-hdmirx-edid-fix-v1.patch
+- Fix buffer overflow on repeated HDMIRX replug: 0003-rockchip-rk3588-hdmirx-plugout-fix-v1.patch
 
 Testing is done on Rock 5B[+] and Orange Pi 5 Ultra.
 
